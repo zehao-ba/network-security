@@ -1,0 +1,125 @@
+
+#standard
+def readPacket():
+    file = open('packet.txt')
+    packet = []
+    line = file.readline()
+    while line:
+        line = line.strip('\n')
+        #print "packet", line
+        p_list = line.split(' ')
+        packet.append(p_list)
+        line = file.readline()
+    file.close()
+    return packet
+
+def readStdACL():
+    file = open('ACL.txt')
+    acl = []
+    interface = []
+    ip = []
+    line = file.readline()
+    while line:
+        line = line.strip('\n')
+        acl_list = line.split(' ')
+        #print "acl", acl
+        #acl_list = line.strip()
+        if acl_list[0]=='access-list':
+            acl.append(acl_list)
+            line = file.readline()
+            #print acl_list
+        elif acl_list[0]=='interface':
+            interface.append(acl_list)
+            line = file.readline()
+        elif acl_list[0]=='ip':
+            ip.append(acl_list)
+            line = file.readline()
+    file.close()
+    return acl
+    return interface
+    return ip
+    
+
+def Computation(mask, src):
+    address1 = []
+    address1 = mask.split('.')
+    #print "address1",address1
+
+    '''
+    int_address1 = []
+    for num in address1:
+        int_address1 = int(num)
+        print "int address1", int_address1, type(int_address1)
+        int_address1.append(int_address1)
+        print "int_address1", int_address1 '''
+
+    address2 = []
+    address2 = src.split('.')
+    '''
+    int_address2 = []
+    for num in address2:
+        int_address2 = int(num)
+        int_address2.append(int_address2)
+        print "int_address2", int_address2 '''
+
+    result = []
+    for i in range (0,4):
+        a = address1[i]
+        b = address2[i]
+        if a == '0':
+            result.append(b)
+        elif a == '255':
+            b = '255'
+            result.append(b)
+        #print "list result a", a
+        #print "list result b", b
+    return result
+    #print "src and mask result is", result
+
+def compare(dest_1,dest_2): #dest_1 is result, dest_2 is packet's src
+    dest2_list = dest_2.split('.')
+    #print dest_1
+    #print dest2_list
+    return_flag = True
+    for i in range(0,4):
+        if int(dest_1[i]) == 255 and int(dest2_list[i]) <= 255:
+            #mask includes 255
+            #print "dest_1", dest_1[i]
+            #print "dest_2", dest2_list[i]
+            return True
+        if (int(dest_1[i]) != int(dest2_list[i])):  #mask is 0.0.0.0 
+            return False
+    return True
+
+def check(acl, packets):
+    for packet in packets:
+        found = False
+        for item in acl:
+            p_source = packet[0]
+            #print "source", p_source
+            destination = packet[1]
+            #print item
+            #print "destination", destination
+            command = item[2]
+            #print "command", command
+            a_source = item[3]
+            mask = item[4]
+            #print "mask", mask
+            result = Computation(mask, a_source)
+            #print "result",result
+            #print "p_source", p_source
+            dest_match = compare(result, p_source)
+            #print "match", dest_match
+            if(dest_match == True):
+                found = True
+                print p_source, destination, "is", command
+            if found:
+                break
+            if not found:
+                continue
+            
+ 
+if __name__ == "__main__":
+    packets = readPacket()
+    acl = readStdACL()
+    check(acl, packets)
