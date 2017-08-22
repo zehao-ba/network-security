@@ -1,0 +1,111 @@
+def getCipher():
+    print "Please choose Caesar(C), Vigenere(V) or Matrix transposition(M) cipher: "
+    cipher = raw_input()
+    return cipher
+
+def getMode():
+    print "Please choose to encrypt(e) or decrypt(d): "
+    mode = raw_input()
+    return mode
+
+def getPT():
+    print "Enter the message: "
+    plaintext = raw_input().lower()
+    return plaintext
+
+def getSK():
+    print "Enter the secret key: "
+    secretkey = raw_input()
+    return secretkey
+
+def Caesar(plaintext, secretkey, mode):
+    #print 'CCCCC'
+    secretkey = int(secretkey)
+    if mode == 'e':
+        secretkey = secretkey
+    else:
+        secretkey = - secretkey
+    c_output = ""
+    for item in plaintext:
+        pt_num = ord(item)
+        en_num = pt_num + secretkey
+        if en_num < 123 and en_num > 96:
+            c_output += chr(en_num)
+        elif en_num > 122:
+            en_num = en_num - 26
+            en_char = chr(en_num)
+            c_output += en_char
+        elif en_num < 97:
+            en_num = en_num + 26
+            en_char = chr(en_num)
+            c_output += en_char
+    print 'The encrypted output is:', c_output
+
+def Vigenere(plaintext, secretkey, mode):
+    #print 'Vvvvv'
+    while (len(plaintext) > len(secretkey)):
+        secretkey += secretkey
+    v_output = ""
+    for i in range(len(plaintext)):
+        pt_num = ord(plaintext[i])
+        if mode == 'e':
+            secretkey = secretkey.lower()
+            key_num = ord(secretkey[i]) - 97
+        else:
+            secretkey = secretkey.lower()
+            key_num = 97 - ord(secretkey[i])
+        en_num = pt_num + key_num
+        if en_num < 123 and en_num > 96:
+            v_output += chr(en_num)
+        elif en_num > 122:
+            en_num = en_num - 26
+            en_char = chr(en_num)
+            v_output += en_char
+        elif en_num < 97:
+            en_num = en_num + 26
+            en_char = chr(en_num)
+            v_output += en_char
+    print 'The encrypted output is:', v_output
+
+def MatrixTransposition(plaintext, secretkey, mode):
+    #print 'MatrixTransposition'
+    key_length = len(secretkey)
+    PT_length = len(plaintext)
+    print 'keyleng', key_length
+    print 'ptlength', PT_length
+    PT = []
+    for character in plaintext:
+        PT.append(character)
+    if mode == 'e':
+        reminder = PT_length % key_length
+        print 'reminder', reminder
+        group = []
+        for i in range(len(secretkey)):
+            for j in range(len(plaintext)):
+                group.append(PT[j])
+                print 'group now', group
+                print 'bf delete',PT
+                del PT[j]
+                print 'after delete', PT
+                if len(group[i]) == key_length:
+                    break
+                elif len(group[i]) == key_length:
+                    break
+                elif len(group[i]) != key_length   :
+                    group[i].append('%')
+                    continue
+        print 'group', group
+            
+                
+            
+cipher = getCipher()
+mode = getMode()
+plaintext = getPT()
+secretkey = getSK()
+
+if cipher == 'C':
+    Caesar(plaintext, secretkey, mode)
+elif cipher == 'V':
+    Vigenere(plaintext, secretkey, mode)
+elif cipher == 'M':
+    MatrixTransposition(plaintext, secretkey, mode)
